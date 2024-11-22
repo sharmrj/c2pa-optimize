@@ -12,7 +12,7 @@ const GENERATOR: &str = "test_app/0.1";
 fn main() -> Result<(), c2pa::Error> {
     let stream = std::fs::File::open("soup.png")?;
     let reader = Reader::from_stream("image/png", stream)?;
-    let manifestJson = reader.json();
+    let manifest_json = reader.json().to_string();
     match resize("soup.png") {
         Ok(bytes) => fs::write("opt-test.webp", bytes).expect("Uh oh"),
         Err(err) => println!("Err: {}", err)
@@ -25,10 +25,9 @@ fn main() -> Result<(), c2pa::Error> {
         Action::new(c2pa_action::CONVERTED)
             .set_parameter("identifier", parent.instance_id().to_owned())?,
     );
-    let mut builder = Builder::from_json(&manifestJson)?;
-    builder
-        .set_claim_generator_info(ClaimGeneratorInfo::new(GENERATOR))
-        .add_assertion(Actions::LABEL, &actions)?;
+    let mut builder = Builder::from_json(&manifest_json)?;
+    builder.add_assertion(Actions::LABEL, &actions)?;
+    builder.add_ingredient(Ingredient::from_file(PathBuf::from("soup.png"))?);
     // sign and embed into the target file
     let signcert_path = "cert/es256.pub";
     let pkey_path = "cert/es256.pem";
