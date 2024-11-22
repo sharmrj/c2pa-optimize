@@ -1,0 +1,12 @@
+[package]
+name = "c2pa-optimize"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+
+[dependencies]
+magick_rust = "1.0.0"
+c2pa = { version = "0.35.0", features = ["file_io", "add_thumbnails", "unstable_api"] }
+anyhow = "1.0.40"
+
